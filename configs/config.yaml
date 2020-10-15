@@ -1,0 +1,97 @@
+run-title: Tashkil-3015
+debug: false
+
+paths:
+  base: ./dataset/tashkeela
+  save: ./models
+  load: ./models/Tashkil-3015/Tashkil-3015_05_0.0571.pt
+  resume: ./models/Tashkil-2038/Tashkil-2038.best.pt #2023
+  constants: ./dataset/helpers/constants
+  word-embs: ./dataset/tashkeela/vocab.vec
+
+loader:
+  wembs-limit: -1
+  num-workers: 16
+
+train:
+  epochs: 1000
+  batch-size: 128
+  char-embed-dim: 32
+  resume: false
+  resume-lr: false
+  freeze-base: true
+  baseline: false
+  anneal-ddo: true
+  anneal-ddo-range: 10 
+
+  max-word-len: 13
+  max-sent-len: 10
+
+  rnn-cell: lstm
+  sent-lstm-layers: 2
+  word-lstm-layers: 2
+
+  sent-lstm-units: 256
+  word-lstm-units: 512
+  decoder-units: 256
+
+  markov-signal: true
+
+  sent-dropout: 0.2
+  diac-dropout: 0
+  
+  final-dropout: 0.2
+
+  sent-mask-zero: false
+
+  lr-factor: 0.5
+  lr-patience: 1
+  lr-min: 1.e-7
+  lr-init: 0.002
+
+  weight-decay: 0
+  vertical-dropout: 0.25
+  recurrent-dropout: 0.25
+  
+  stopping-delta: 1.e-7
+  stopping-patience: 3
+  
+  ce-weight: 1
+  not-ce-weight: 1
+  ce-lambda: 0
+  
+predictor:
+  batch-size: 75
+  stride: 2
+  window: 20
+  gt-signal-prob: 0
+  seed-idx: 0
+
+sentence-break:
+  stride: 2
+  window: 10
+  min-window: 1
+  export-map: false
+  files:
+    - train/train.txt
+    - val/val.txt
+  delimeters: 
+    - ،
+    - ؛
+    - ','
+    - ;
+    - «
+    - »
+    - '{'
+    - '}'
+    - '('
+    - ')'
+    - '['
+    - ']'
+    - '.'
+    - '*'
+    - '-'
+    - ':'
+    - '?'
+    - '!'
+    - ؟

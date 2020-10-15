@@ -1,0 +1,10 @@
+paths:
+  base: ./dataset/tashkeela
+
+segment:
+  stride: 2
+  window: 20
+  min-window: 1
+  export-map: true
+  files:
+    - test/test.txt

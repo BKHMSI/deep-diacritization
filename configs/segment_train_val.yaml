@@ -1,0 +1,11 @@
+paths:
+  base: ./dataset/tashkeela
+
+segment:
+  stride: 2
+  window: 10
+  min-window: 1
+  export-map: false
+  files:
+    - train/train.txt
+    - val/val.txt

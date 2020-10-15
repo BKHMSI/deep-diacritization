@@ -1,0 +1,1 @@
+python ./utils/segment.py -c configs/segment_train_val.yaml
