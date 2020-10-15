@@ -3,16 +3,7 @@ We propose a novel architecture for labelling character sequences that achieves 
 
 ## Results on the Tashkeela Benchmark
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:center}
-.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:center}
-.tg .tg-7btt{border-color:inherit;font-weight:bold;text-align:center;vertical-align:top}
-</style>
+
 <table class="tg">
 <thead>
   <tr>
@@ -29,21 +20,21 @@ We propose a novel architecture for labelling character sequences that achieves 
 </thead>
 <tbody>
   <tr>
-    <td class="tg-0pky">Barqawi, 2017</td>
+    <td class="tg-0pky"><a href="https://github.com/Barqawiz/Shakkala">Barqawi, 2017</a></td>
     <td class="tg-c3ow">3.73% / 11.19%</td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">2.88% / 6.53%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">4.36% / 10.89%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">3.33% / 6.37%</span></td>
   </tr>
   <tr>
-    <td class="tg-0pky">Fadel et al. 2019</td>
+    <td class="tg-0pky"><a href="https://www.aclweb.org/anthology/D19-5229/">Fadel et al. 2019</a></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">2.60% / 7.69%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">2.11% / 4.57%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">3.00% / 7.39%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">2.42% / 4.44%</span></td>
   </tr>
   <tr>
-    <td class="tg-0pky">Abbad and Xiong, 2020</td>
+    <td class="tg-0pky"><a href="https://www.researchgate.net/publication/340574877_Multi-components_System_for_Automatic_Arabic_Diacritization">Abbad and Xiong, 2020</a></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">3.39% / 9.94%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">2.61% / 5.83%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">3.34% / 7.98%</span></td>
@@ -56,7 +47,7 @@ We propose a novel architecture for labelling character sequences that achieves 
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">2.11% / 5.26%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">1.71% / 3.15%</span></td>
   </tr>
-  <tr>
+  <tr style="font-weight:bold">
     <td class="tg-0pky">D3 (Ours)</td>
     <td class="tg-7btt"><span style="font-style:normal">1.83% </span>/ 5.34%</td>
     <td class="tg-7btt"><span style="font-style:normal">1.48% </span>/ 3.11%</td>
