@@ -27,7 +27,7 @@ We propose a novel architecture for labelling character sequences that achieves 
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">3.33% / 6.37%</span></td>
   </tr>
   <tr>
-    <td class="tg-0pky"><a href="https://www.aclweb.org/anthology/D19-5229/">Fadel et al. 2019</a></td>
+    <td class="tg-0pky"><a href="https://www.aclweb.org/anthology/D19-5229/">Fadel et al., 2019</a></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">2.60% / 7.69%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">2.11% / 4.57%</span></td>
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">3.00% / 7.39%</span></td>
@@ -48,11 +48,11 @@ We propose a novel architecture for labelling character sequences that achieves 
     <td class="tg-c3ow"><span style="font-weight:400;font-style:normal">1.71% / 3.15%</span></td>
   </tr>
   <tr style="font-weight:bold">
-    <td class="tg-0pky">D3 (Ours)</td>
-    <td class="tg-7btt"><span style="font-style:normal">1.83% </span>/ 5.34%</td>
-    <td class="tg-7btt"><span style="font-style:normal">1.48% </span>/ 3.11%</td>
-    <td class="tg-7btt"><span style="font-style:normal">2.09</span>% / 5.08%</td>
-    <td class="tg-7btt"><span style="font-style:normal">1.69% </span>/ 3.00%</td>
+    <td class="tg-0pky"><strong>D3 (Ours)</strong></td>
+    <td class="tg-7btt"><strong style="font-style:normal">1.83% / 5.34%</strong></td>
+    <td class="tg-7btt"><strong style="font-style:normal">1.48% / 3.11%</strong></td>
+    <td class="tg-7btt"><strong style="font-style:normal">2.09% / 5.08%</strong></td>
+    <td class="tg-7btt"><strong style="font-style:normal">1.69% / 3.00%</strong></td>
   </tr>
 </tbody>
 </table>
