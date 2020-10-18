@@ -1,5 +1,5 @@
 # Deep Diacritization: Efficient Hierarchical Recurrence for Improved Arabic Diacritization
-We propose a novel architecture for labelling character sequences that achieves state-of-the-art results on the Tashkeela Arabic diacritization benchmark. The core is a two-level recurrence hierarchy that operates on the word and character levels separately---enabling faster training and inference than comparable traditional models. A cross-level attention module further connects the two, and opens the door for network interpretability. The task module is a softmax classifier that enumerates valid combinations of diacritics. This architecture can be extended with a recurrent decoder that optionally accepts priors from partially diacritized text, improving performance significantly. We employ extra tricks such as sentence dropout and majority voting to further boost the final result. Our best model achieves a WER of 5.34\%, outperforming the previous state-of-the-art with a 30.56\% relative error reduction.
+We propose a novel architecture for labelling character sequences that achieves state-of-the-art results on the Tashkeela Arabic diacritization benchmark. The core is a two-level recurrence hierarchy that operates on the word and character levels separately---enabling faster training and inference than comparable traditional models. A cross-level attention module further connects the two, and opens the door for network interpretability. The task module is a softmax classifier that enumerates valid combinations of diacritics. This architecture can be extended with a recurrent decoder that optionally accepts priors from partially diacritized text, improving performance significantly. We employ extra tricks such as sentence dropout and majority voting to further boost the final result. Our best model achieves a WER of **5.34\%**, outperforming the previous state-of-the-art with a **30.56\%** relative error reduction.
 
 ## Results on the Tashkeela Benchmark
 
@@ -58,5 +58,17 @@ We propose a novel architecture for labelling character sequences that achieves 
 </table>
 
 ## Getting Started
+#### 1. Download Tashkeela 
+```shell
+bash scripts/download_tashkeela.sh
+```
+
+#### 2. Segment Datasets
+```shell
+bash scripts/segment_train_val.sh
+``` 
+```shell
+bash scripts/segment_test.sh
+``` 
 
 ## Cite
