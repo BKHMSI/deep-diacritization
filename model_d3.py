@@ -55,9 +55,9 @@ def flat23head(diac_idx):
 
     return np.array(haraka), np.array(tanween), np.array(shadda) 
 
-class DiacritizerAttn(DiacritizerBase):
+class DiacritizerD3(nn.Module):
     def __init__(self, config, device='cuda'):
-        super(DiacritizerAttn, self).__init__()
+        super(DiacritizerD3, self).__init__()
         self.max_word_len = config["train"]["max-word-len"]
         self.max_sent_len = config["train"]["max-sent-len"]
         self.char_embed_dim = config["train"]["char-embed-dim"]
@@ -138,7 +138,6 @@ class DiacritizerAttn(DiacritizerBase):
             kind="dot",
             query_dim=self.word_lstm_units * 2,
             input_dim=self.sent_lstm_units * 2,
-            # scaled="seqlen"
        )
 
         self.lstm_decoder = self.RNN_Layer(
@@ -156,7 +155,7 @@ class DiacritizerAttn(DiacritizerBase):
         self.word_embs = T.tensor(wembs, dtype=T.float32)
 
         self.classifier = nn.Linear(self.lstm_decoder.hidden_size, 15)
-        self.dropout = nn.Dropout(0.2) # this was 0.5
+        self.dropout = nn.Dropout(0.2)
 
     def forward(self, sents, words, labels):
         #^ sents : [b ts]

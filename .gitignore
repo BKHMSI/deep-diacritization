@@ -1,3 +1,5 @@
 dataset/tashkeela
+models
+logs
 
 *.pyc

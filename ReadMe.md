@@ -63,7 +63,12 @@ We propose a novel architecture for labelling character sequences that achieves 
 bash scripts/download_tashkeela.sh
 ```
 
-#### 2. Segment Datasets
+#### 2. Download fastText Arabic CC Binary
+```shell
+bash scripts/download_fasttext_ar.sh
+``` 
+
+#### 3. Segment Datasets
 ```shell
 bash scripts/segment_train_val.sh
 ``` 
@@ -71,4 +76,14 @@ bash scripts/segment_train_val.sh
 bash scripts/segment_test.sh
 ``` 
 
-## Cite
+#### 4. Extract and Embed Tashkeela Vocabulary
+```shell
+bash scripts/embed_vocab.sh
+```
+
+#### 5. Train D2
+```shell
+bash scripts/train_d2.sh
+```
+
+## Citation

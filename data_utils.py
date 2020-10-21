@@ -29,7 +29,7 @@ class DatasetUtils:
         self.pad_val = self.special_tokens.index("<pad>")
         self.pad_target_val = -100
 
-        self.markov_signal = config["train"]["markov-signal"]
+        self.markov_signal = config['train'].get('markov-signal', False)
         self.batch_first = config['train'].get('batch-first', True)
 
         self.gt_prob = config["predictor"]["gt-signal-prob"]

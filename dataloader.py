@@ -13,7 +13,7 @@ from pyarabic.araby import tokenize, strip_tashkeel
 import torch as T
 from torch.utils.data import DataLoader, Dataset
 
-from .data_utils import DatasetUtils
+from data_utils import DatasetUtils
 
 class DataRetriever(Dataset):
     def __init__(self, dtype, data_utils : DatasetUtils, is_test : bool = False):
@@ -40,8 +40,8 @@ class DataRetriever(Dataset):
         return len(self.lines) 
 
     def __getitem__(self, idx):
-        word_x, char_x, diac_x, f_diac_y, gt_mask = self.create_sentence_with_y_flat_and_gt_mask(idx)
-        return self.preprocess((word_x, char_x, diac_x, gt_mask)), T.tensor(f_diac_y, dtype=T.long)
+        word_x, char_x, diac_x, diac_y = self.create_sentence(idx)
+        return self.preprocess((word_x, char_x, diac_x)), T.tensor(diac_y, dtype=T.long)
 
     def create_sentence(self, idx):
         line = self.lines[idx]
