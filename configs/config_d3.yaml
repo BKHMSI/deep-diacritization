@@ -1,14 +1,13 @@
-run-title: Tashkil-3015
+run-title: Tashkeela-D3
 debug: false
 
 paths:
   base: ./dataset/tashkeela
   save: ./models
-  load: ./models/Tashkil-3015/Tashkil-3015_05_0.0571.pt
-  resume: ./models/Tashkil-2038/Tashkil-2038.best.pt #2023
+  load: ./models/Tashkeela-D3/tashkeela-d3.pt
+  resume: ./models/Tashkeela-D2/tashkeela-d2.pt
   constants: ./dataset/helpers/constants
   word-embs: ./dataset/tashkeela/vocab.vec
-  ft-bin: /media/bkhmsi/B2E81AEEE81AB119/Users/occ/Documents/Projects/DeepDiacritization/dataset/tashkeela/embs/cc.ar.300.bin
 
 loader:
   wembs-limit: -1
@@ -56,10 +55,6 @@ train:
   
   stopping-delta: 1.e-7
   stopping-patience: 3
-  
-  ce-weight: 1
-  not-ce-weight: 1
-  ce-lambda: 0
   
 predictor:
   batch-size: 75

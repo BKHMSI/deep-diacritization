@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from torch.utils.data import DataLoader
 
-from model_d2   import DiacritizerD2
+from model_d3 import DiacritizerD3
 from data_utils import DatasetUtils
 from dataloader import DataRetriever
 
@@ -26,18 +26,19 @@ class Predictor:
         self.mapping = self.data_utils.load_mapping_v3(TEST_FILE)
         self.original_lines = self.data_utils.load_file_clean(TEST_FILE, strip=True)
 
-        self.model = DiacritizerD2(config, device=DEVICE)
+        self.model = DiacritizerD3(config, device=DEVICE)
         self.model.build(word_embeddings, vocab_size)
         state_dict = T.load(config["paths"]["load"], map_location=T.device(DEVICE))['state_dict']
         self.model.load_state_dict(state_dict)
         self.model.to(DEVICE)
         self.model.eval()
 
-        self.data_loader = DataLoader(
-            DataRetriever(TEST_FILE, self.data_utils, is_test=True),
+        testset = DataRetriever("test", self.data_utils, is_test=True)
+
+        self.data_loader = DataLoader(testset,
             batch_size=min(config["predictor"]["batch-size"], 128),
             shuffle=False,
-            num_workers=16
+            num_workers=config["loader"]["num-workers"]
         )
 
 class PredictTri(Predictor):
@@ -67,15 +68,16 @@ class PredictTri(Predictor):
         return returned_text
 
     def predict_mv(self):
-
         y_gen_diac, y_gen_tanween, y_gen_shadda = self.model.predict(self.data_loader)
-        
+      
         diacritized_lines = []
         for sent_idx, line in tqdm(enumerate(self.original_lines), total=len(self.original_lines)):
             diacritized_line = ""
             line = ' '.join(tokenize(line))
             for char_idx, char in enumerate(line):
                 diacritized_line += char
+
+                # mapping: [seg_idx][t_idx][c_idx] --> [sent_idx][char_idx]
                 char_vote_haraka, char_vote_shadda, char_vote_tanween = [], [], []
                 if sent_idx not in self.mapping: continue
                 for seg_idx in self.mapping[sent_idx]:
@@ -99,7 +101,7 @@ class PredictTri(Predictor):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Paramaters')
     parser.add_argument('-c', '--config', type=str,
-                        default="configs/config_d2.yaml", help='path of config file')
+                        default="configs/config_d3.yaml", help='path of config file')
     args = parser.parse_args()
 
 
@@ -107,7 +109,7 @@ if __name__ == "__main__":
         config = yaml.load(file, Loader=yaml.FullLoader)
 
     config["train"]["max-sent-len"] = config["predictor"]["window"]
-        
+
     predictor = PredictTri(config)
     diacritized_lines = predictor.predict_mv()
 
@@ -115,3 +117,4 @@ if __name__ == "__main__":
 
     with open(os.path.join(config["paths"]["base"], 'preds', f'predictions_{exp_id}.txt'), 'w', encoding='utf-8') as fout:
         fout.write('\n'.join(diacritized_lines))
+

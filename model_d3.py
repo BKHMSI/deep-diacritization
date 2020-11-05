@@ -1,59 +1,12 @@
-import yaml
-import argparse
 import numpy as np
 import torch as T
 
+from tqdm import tqdm 
 from torch import nn
 from torch.nn import functional as F
 
-from tqdm import tqdm
-
-from components.models import DiacritizerBase
+from components.k_lstm import K_LSTM
 from components.attention import Attention
-from components.decoder import RecurrentDecoderLayer
-
-from components import rnn
-
-from utils.config_dataclass import TrainData
-
-import pdb
-
-CELLS = {
-    'star': rnn.STAR,
-    'lstm': rnn.K_LSTM,
-    'rgu': rnn.RGUnit,
-}
-
-def flat23head(diac_idx):
-    haraka, tanween, shadda = [], [], []
-    # 0, 1,  2, 3,  4, 5,  6, 7, 8,  9,     10,  11,   12,  13,   14
-    # 0, F, FF, K, KK, D, DD, S, Sh, ShF, ShFF, ShK, ShKK, ShD, ShDD
-    convert = [
-        [0,0,0],
-        [1,0,0],
-        [1,1,0],
-        [2,0,0],
-        [2,1,0],
-        [3,0,0],
-        [3,1,0],
-        [4,0,0],
-        [0,0,1],
-        [1,0,1],
-        [1,1,1],
-        [2,0,1],
-        [2,1,1],
-        [3,0,1],
-        [3,1,1]
-    ]
-
-
-    for diac in diac_idx:
-        c_out = convert[diac]
-        haraka += [c_out[0]]
-        tanween += [c_out[1]]
-        shadda += [c_out[2]]
-
-    return np.array(haraka), np.array(tanween), np.array(shadda) 
 
 class DiacritizerD3(nn.Module):
     def __init__(self, config, device='cuda'):
@@ -76,34 +29,23 @@ class DiacritizerD3(nn.Module):
         self.sent_lstm_layers = config["train"]["sent-lstm-layers"]
         self.word_lstm_layers = config["train"]["word-lstm-layers"]
     
-        self.markov_signal = config["train"]["markov-signal"]
-
-        self.ce_lambda = config["train"]["ce-lambda"]
-
         self.cell = config['train'].get('rnn-cell', 'lstm')
         self.num_layers = config["train"].get("num-layers", 2)
-        self.RNN_Layer = CELLS[self.cell]
+        self.RNN_Layer = K_LSTM
 
         self.batch_first = config['train'].get('batch-first', True)
 
         self.baseline = config["train"].get("baseline", False)
         self.device = device
-
-        self.gt_prob = config["predictor"]["gt-signal-prob"]
         
     def build(self, wembs: T.Tensor, abjad_size: int):
         self.closs = F.cross_entropy
         self.bloss = F.binary_cross_entropy_with_logits
 
-        if self.cell == 'lstm':
-            rnn_kargs = dict(
-                recurrent_dropout_mode=self.recurrent_dropout_mode,
-                recurrent_activation=self.recurrent_activation,
-            )
-        elif self.cell in ['star', 'rgu']:
-            rnn_kargs = dict(
-                gate_activation=self.recurrent_activation
-            )
+        rnn_kargs = dict(
+            recurrent_dropout_mode=self.recurrent_dropout_mode,
+            recurrent_activation=self.recurrent_activation,
+        )
 
         self.sent_lstm = self.RNN_Layer(
             input_size=300,
@@ -207,7 +149,6 @@ class DiacritizerD3(nn.Module):
         attn_enc, attn_map = self.attention(char_enc_reshaped, sent_enc, word_mask.bool(), prejudice_mask=omit_self_mask)
         #^ attn_enc: [b ts tw dae]
 
-        # attn_enc = attn_enc.view(-1, self.max_word_len, self.attention.Dout)
         attn_enc = attn_enc.view(-1, self.max_sent_len*self.max_word_len, self.attention.Dout)
         #^ attn_enc: [b*ts tw dae]
 
@@ -217,7 +158,6 @@ class DiacritizerD3(nn.Module):
             labels = labels * ddo.unsqueeze(-1).long().to(self.device)
             #^ labels : [b ts tw] ; DO(ts)
                          
-        # labels = labels.view(-1, self.max_word_len, 8).float()
         labels = labels.view(-1, self.max_sent_len*self.max_word_len, 8).float()
         #^ labels: [b*ts tw 8]
         
@@ -229,7 +169,6 @@ class DiacritizerD3(nn.Module):
         dec_out, _ = self.lstm_decoder(final_vec)
         #^ dec_out: [b*ts tw du]
 
-        # import pdb; pdb.set_trace()
         dec_out = dec_out.reshape(-1, self.max_word_len, self.lstm_decoder.hidden_size)
     
         diac_out = self.classifier(self.dropout(dec_out))
@@ -241,7 +180,6 @@ class DiacritizerD3(nn.Module):
         if not self.batch_first:
             diac_out = diac_out.swapaxes(1, 0)
  
-        # diac_out = T.split(diac_out, [5, 1, 1], dim=-1)
         return diac_out, attn_map
 
     def predict_step(self, sents, words, labels, gt_mask):
@@ -311,14 +249,7 @@ class DiacritizerD3(nn.Module):
         for ts in range(self.max_sent_len):
             dec_hx = (zeros, zeros)
             #^ dec_hx: [1 b du]
-            for tw in range(self.max_word_len):
-                # for b in range(batch_sz):
-                #     if gt_mask[b,ts,tw] or True:
-                # prev_label = labels[:, ts, tw, :].float()
-
-                # if self.training:
-                #     prev_label = labels[:, ts, tw].float()
-                        
+            for tw in range(self.max_word_len):     
                 final_vec = T.cat([attn_enc[:,ts,tw,:], char_enc[:,ts,tw,:], prev_label], dim=-1).unsqueeze(1)
                 #^ final_vec: [b 1 dce+8]
                 dec_out, dec_hx = self.lstm_decoder(final_vec, dec_hx)
@@ -331,7 +262,7 @@ class DiacritizerD3(nn.Module):
 
                 out_idx = T.max(T.softmax(logits_raw.squeeze(), dim=-1), dim=-1)[1]
 
-                haraka, tanween, shadda = flat23head(out_idx.detach().cpu().numpy())
+                haraka, tanween, shadda = flat2_3head(out_idx.detach().cpu().numpy())
 
                 haraka_onehot = T.eye(6)[haraka].float().to(self.device)
                 #^ haraka_onehot+bos_tag: [b 6]
@@ -339,7 +270,7 @@ class DiacritizerD3(nn.Module):
                 tanween = T.tensor(tanween).float().unsqueeze(-1).to(self.device)
                 shadda = T.tensor(shadda).float().unsqueeze(-1).to(self.device)
 
-                prev_label = T.cat([haraka_onehot, tanween, shadda], dim=-1)]
+                prev_label = T.cat([haraka_onehot, tanween, shadda], dim=-1)
 
                 all_out[:,ts,tw,:] = logits_raw.squeeze()
 
@@ -354,12 +285,69 @@ class DiacritizerD3(nn.Module):
         #^ yt: [b ts tw]
         yt = yt.to(self.device)        
 
-        # diac, _ = self.predict_step(*xt)
-        # if not self.markov_signal or self.training:
-        #     diac = self(*xt)[0]
-        # else:
-        diac = self.predict_step(*xt)
+        if self.training:
+            diac, _ = self(*xt)
+        else:
+            diac = self.predict_step(*xt)
         #^ diac[0] : [b ts tw 5]
 
         loss = self.closs(diac.view(-1,15), yt.view(-1))
         return loss
+
+    def predict(self, dataloader):
+        training = self.training
+        self.eval()
+
+        preds = {'haraka': [], 'shadda': [], 'tanween': []}
+        print("> Predicting...")
+        for inputs, _ in tqdm(dataloader, total=len(dataloader)):
+            inputs[1] = inputs[1].to(self.device)
+            inputs[2] = inputs[2].to(self.device)
+            diac = self.predict_step(*inputs)
+            output = np.argmax(T.softmax(diac.detach(), dim=-1).cpu().numpy(), axis=-1)
+            #^ [b ts tw]
+
+            haraka, tanween, shadda = flat_2_3head(output)
+
+            preds['haraka'].extend(haraka)
+            preds['tanween'].extend(tanween)
+            preds['shadda'].extend(shadda)
+        
+        self.train(training)
+        return (
+            np.array(preds['haraka']),
+            np.array(preds["tanween"]),
+            np.array(preds["shadda"]),
+        )
+
+
+def flat2_3head(diac_idx):
+    haraka, tanween, shadda = [], [], []
+    # 0, 1,  2, 3,  4, 5,  6, 7, 8,  9,     10,  11,   12,  13,   14
+    # 0, F, FF, K, KK, D, DD, S, Sh, ShF, ShFF, ShK, ShKK, ShD, ShDD
+    convert = [
+        [0,0,0],
+        [1,0,0],
+        [1,1,0],
+        [2,0,0],
+        [2,1,0],
+        [3,0,0],
+        [3,1,0],
+        [4,0,0],
+        [0,0,1],
+        [1,0,1],
+        [1,1,1],
+        [2,0,1],
+        [2,1,1],
+        [3,0,1],
+        [3,1,1]
+    ]
+
+
+    for diac in diac_idx:
+        c_out = convert[diac]
+        haraka += [c_out[0]]
+        tanween += [c_out[1]]
+        shadda += [c_out[2]]
+
+    return np.array(haraka), np.array(tanween), np.array(shadda) 

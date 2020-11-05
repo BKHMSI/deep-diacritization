@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import math
 
 import yaml
 import numpy as np
@@ -12,10 +11,10 @@ from tqdm.auto import tqdm
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from .linear_scheduler import LinearSchedule
-from .attn_model import DiacritizerAttn
-from .data_utils import DatasetUtils
-from .dataloader import DataRetriever
+from components.linear_scheduler import LinearSchedule
+from model_d3 import DiacritizerD3
+from data_utils import DatasetUtils
+from dataloader import DataRetriever
 
 SEED = 1337
 T.random.manual_seed(SEED)
@@ -48,13 +47,12 @@ class Trainer:
         vocab_size = len(self.data_utils.letter_list)
         word_embeddings = self.data_utils.embeddings
 
-        self.model = DiacritizerAttn(config, self.device)
+        self.model = DiacritizerD3(config, self.device)
         self.model.build(word_embeddings, vocab_size)
         self.resume = config['train']['resume']
         self.start_epoch = 0
         self.epochs = config["train"]["epochs"]
 
-        self.ce_weight = config["train"]["ce-weight"]
         self.anneal_ddo = config["train"]["anneal-ddo"]
         self.ddo_scheduler = LinearSchedule(config["train"]["anneal-ddo-range"], 0, 1) 
 
@@ -86,7 +84,6 @@ class Trainer:
         else:
             self.optimizer = T.optim.Adam(self.model.parameters(), lr=self.init_lr, weight_decay=self.weight_decay_)
 
-        ##### Freeze Weights for Phase (2) #####
         is_freeze_valid = "freeze-base" in config["train"]
         if is_freeze_valid and config["train"]["freeze-base"]:
             print("> Freezing Model")
@@ -100,7 +97,6 @@ class Trainer:
                 params.requires_grad = True 
             
         print("> Creating Dataloaders")
-
         train_set = "train-small" if "small" in self.embs_path else "train"
         self.train_loader = DataLoader(
             DataRetriever(train_set, self.data_utils),
