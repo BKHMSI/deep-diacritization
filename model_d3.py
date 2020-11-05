@@ -182,7 +182,7 @@ class DiacritizerD3(nn.Module):
  
         return diac_out, attn_map
 
-    def predict_step(self, sents, words, labels, gt_mask):
+    def predict_step(self, sents, words, labels):
 
         word_mask = words.ne(0.).float()
         #^ mask: [b ts tw 1]
@@ -320,6 +320,51 @@ class DiacritizerD3(nn.Module):
             np.array(preds["shadda"]),
         )
 
+def flat_2_3head(output):
+    haraka, tanween, shadda = [], [], []
+
+    # 0, 1,  2, 3,  4, 5,  6, 7, 8,  9,     10,  11,   12,  13,   14
+    # 0, F, FF, K, KK, D, DD, S, Sh, ShF, ShFF, ShK, ShKK, ShD, ShDD
+
+    convert = [
+        [0,0,0],
+        [1,0,0],
+        [1,1,0],
+        [2,0,0],
+        [2,1,0],
+        [3,0,0],
+        [3,1,0],
+        [4,0,0],
+        [0,0,1],
+        [1,0,1],
+        [1,1,1],
+        [2,0,1],
+        [2,1,1],
+        [3,0,1],
+        [3,1,1]
+    ]
+
+    b, ts, tw = output.shape
+
+    for b_idx in range(b):
+        h_s, t_s, s_s = [], [], []
+        for w_idx in range(ts):
+            h_w, t_w, s_w = [], [], []
+            for c_idx in range(tw):
+                c = convert[int(output[b_idx, w_idx, c_idx])]
+                h_w  += [c[0]]
+                t_w += [c[1]]
+                s_w  += [c[2]]
+            h_s += [h_w]
+            t_s += [t_w]
+            s_s += [s_w]
+        
+        haraka  += [h_s]
+        tanween += [t_s]
+        shadda  += [s_s]
+            
+
+    return haraka, tanween, shadda
 
 def flat2_3head(diac_idx):
     haraka, tanween, shadda = [], [], []

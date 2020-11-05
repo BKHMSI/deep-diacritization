@@ -1,0 +1,4 @@
+paths:
+  base: ./dataset/tashkeela
+  word-embs: ./dataset/tashkeela/vocab.vec
+  ft-bin: ./dataset/cc.ar.300.bin

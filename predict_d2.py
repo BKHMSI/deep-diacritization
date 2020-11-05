@@ -111,7 +111,7 @@ if __name__ == "__main__":
     predictor = PredictTri(config)
     diacritized_lines = predictor.predict_mv()
 
-    exp_id = config["run-title"].split("-")[-1]
+    exp_id = config["run-title"].split("-")[-1].lower()
 
     with open(os.path.join(config["paths"]["base"], 'preds', f'predictions_{exp_id}.txt'), 'w', encoding='utf-8') as fout:
         fout.write('\n'.join(diacritized_lines))
