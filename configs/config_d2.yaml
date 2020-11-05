@@ -1,11 +1,11 @@
-run-title: Tashkeela-D2
+run-title: tashkeela-d2
 debug: false
 
 paths:
   base: ./dataset/tashkeela
   save: ./models
-  load: ./models/Tashkeela-D2/Tashkeela-D2.best.pt
-  resume: ./models/Tashkeela-D2/Tashkeela-D2.best.pt 
+  load: ./models/Tashkeela-D2/tashkeela-d2.pt
+  resume: ./models/Tashkeela-D2/tashkeela-d2.pt 
   constants: ./dataset/helpers/constants
   word-embs: ./dataset/tashkeela/vocab.vec
 

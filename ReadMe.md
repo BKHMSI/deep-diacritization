@@ -1,4 +1,6 @@
 # Deep Diacritization: Efficient Hierarchical Recurrence for Improved Arabic Diacritization
+[[arXiv](https://arxiv.org/abs/2011.00538)], [[Research Gate](https://www.researchgate.net/publication/345140769_Deep_Diacritization_Efficient_Hierarchical_Recurrence_for_Improved_Arabic_Diacritization)]
+
 We propose a novel architecture for labelling character sequences that achieves state-of-the-art results on the Tashkeela Arabic diacritization benchmark. The core is a two-level recurrence hierarchy that operates on the word and character levels separately---enabling faster training and inference than comparable traditional models. A cross-level attention module further connects the two, and opens the door for network interpretability. The task module is a softmax classifier that enumerates valid combinations of diacritics. This architecture can be extended with a recurrent decoder that optionally accepts priors from partially diacritized text, improving performance significantly. We employ extra tricks such as sentence dropout and majority voting to further boost the final result. Our best model achieves a WER of **5.34\%**, outperforming the previous state-of-the-art with a **30.56\%** relative error reduction.
 
 ## Results on the Tashkeela Benchmark
@@ -81,9 +83,27 @@ bash scripts/segment_test.sh
 bash scripts/embed_vocab.sh
 ```
 
-#### 5. Train D2
+#### 5. Train Model
 ```shell
-bash scripts/train_d2.sh
+bash scripts/train.sh d2
+```
+
+#### 6. Predict then Evaluate Model
+```shell
+bash scripts/evaluate.sh d2
 ```
 
 ## Citation
+
+> This work was accepted at the Fifth Arabic Natural Language Processing Workshop ([COLING/WANLP 2020](https://sites.google.com/view/wanlp-2020/home))
+
+```
+@article{alkhamissi2020dd,
+      title={Deep Diacritization: Efficient Hierarchical Recurrence for Improved Arabic Diacritization}, 
+      author={Badr AlKhamissi and Muhammad N. ElNokrashy and Mohamed Gabr},
+      year={2020},
+      eprint={2011.00538},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+```

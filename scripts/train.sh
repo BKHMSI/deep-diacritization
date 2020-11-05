@@ -1,0 +1,1 @@
+python train_$1.py -c configs/config_$1.yaml

@@ -1,7 +1,10 @@
 import torch as T
+import numpy as np
 
+from tqdm import tqdm
 from torch import nn
 from torch.nn import functional as F
+
 
 from components.k_lstm import K_LSTM
 from components.attention import Attention
@@ -163,3 +166,76 @@ class DiacritizerD2(nn.Module):
         loss = self.closs(diac.view(-1, self.num_classes), yt.view(-1))
 
         return loss
+
+    def predict(self, dataloader):
+        training = self.training
+        self.eval()
+
+        preds = {'haraka': [], 'shadda': [], 'tanween': []}
+        print("> Predicting...")
+        for inputs, _ in tqdm(dataloader, total=len(dataloader)):
+            inputs[0] = inputs[0].to(self.device)
+            inputs[1] = inputs[1].to(self.device)
+            diac, _ = self(*inputs)
+
+            output = np.argmax(T.softmax(diac.detach(), dim=-1).cpu().numpy(), axis=-1)
+            #^ [b ts tw]
+
+            haraka, tanween, shadda = flat_2_3head(output)
+
+            preds['haraka'].extend(haraka)
+            preds['tanween'].extend(tanween)
+            preds['shadda'].extend(shadda)
+        
+        self.train(training)
+        return (
+            np.array(preds['haraka']),
+            np.array(preds["tanween"]),
+            np.array(preds["shadda"]),
+        )
+
+def flat_2_3head(output):
+    haraka, tanween, shadda = [], [], []
+
+    # 0, 1,  2, 3,  4, 5,  6, 7, 8,  9,     10,  11,   12,  13,   14
+    # 0, F, FF, K, KK, D, DD, S, Sh, ShF, ShFF, ShK, ShKK, ShD, ShDD
+
+    convert = [
+        [0,0,0],
+        [1,0,0],
+        [1,1,0],
+        [2,0,0],
+        [2,1,0],
+        [3,0,0],
+        [3,1,0],
+        [4,0,0],
+        [0,0,1],
+        [1,0,1],
+        [1,1,1],
+        [2,0,1],
+        [2,1,1],
+        [3,0,1],
+        [3,1,1]
+    ]
+
+    b, ts, tw = output.shape
+
+    for b_idx in range(b):
+        h_s, t_s, s_s = [], [], []
+        for w_idx in range(ts):
+            h_w, t_w, s_w = [], [], []
+            for c_idx in range(tw):
+                c = convert[int(output[b_idx, w_idx, c_idx])]
+                h_w  += [c[0]]
+                t_w += [c[1]]
+                s_w  += [c[2]]
+            h_s += [h_w]
+            t_s += [t_w]
+            s_s += [s_w]
+        
+        haraka  += [h_s]
+        tanween += [t_s]
+        shadda  += [s_s]
+            
+
+    return haraka, tanween, shadda
