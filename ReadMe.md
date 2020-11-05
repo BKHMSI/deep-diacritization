@@ -59,7 +59,8 @@ We propose a novel architecture for labelling character sequences that achieves 
 </tbody>
 </table>
 
-## Getting Started
+## Step-by-Step Guide
+
 #### 1. Download Tashkeela 
 ```shell
 bash scripts/download_tashkeela.sh
@@ -92,6 +93,10 @@ bash scripts/train.sh d2
 ```shell
 bash scripts/evaluate.sh d2
 ```
+
+## Pretrained Models
+- [D2 Pretrained Model](https://drive.google.com/file/d/1FGelqImFkESbTyRsx_elkKIOZ9VbhRuo/view?usp=sharing)
+- [D3 Pretrained Model](https://drive.google.com/file/d/1T2Qsm_eIzl30JamxlyqJRCCg_bBMm8y0/view?usp=sharing)
 
 ## Citation
 
