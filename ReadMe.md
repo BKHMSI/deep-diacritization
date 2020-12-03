@@ -1,5 +1,5 @@
 # Deep Diacritization: Efficient Hierarchical Recurrence for Improved Arabic Diacritization
-[[Demo](https://deep-diacritization.herokuapp.com/)], [[arXiv](https://arxiv.org/abs/2011.00538)], [[Research Gate](https://www.researchgate.net/publication/345140769_Deep_Diacritization_Efficient_Hierarchical_Recurrence_for_Improved_Arabic_Diacritization)], [[Papers with Code](https://paperswithcode.com/paper/deep-diacritization-efficient-hierarchical)]
+[[Demo](https://deep-diacritization.herokuapp.com/)], [[ACL](https://www.aclweb.org/anthology/2020.wanlp-1.4/)], [[arXiv](https://arxiv.org/abs/2011.00538)], [[Research Gate](https://www.researchgate.net/publication/345140769_Deep_Diacritization_Efficient_Hierarchical_Recurrence_for_Improved_Arabic_Diacritization)], [[Papers with Code](https://paperswithcode.com/paper/deep-diacritization-efficient-hierarchical)]
 
 We propose a novel architecture for labelling character sequences that achieves state-of-the-art results on the Tashkeela Arabic diacritization benchmark. The core is a two-level recurrence hierarchy that operates on the word and character levels separately---enabling faster training and inference than comparable traditional models. A cross-level attention module further connects the two, and opens the door for network interpretability. The task module is a softmax classifier that enumerates valid combinations of diacritics. This architecture can be extended with a recurrent decoder that optionally accepts priors from partially diacritized text, improving performance significantly. We employ extra tricks such as sentence dropout and majority voting to further boost the final result. Our best model achieves a WER of **5.34\%**, outperforming the previous state-of-the-art with a **30.56\%** relative error reduction.
 
@@ -103,12 +103,18 @@ bash scripts/evaluate.sh d2
 > This work was accepted at the Fifth Arabic Natural Language Processing Workshop ([COLING/WANLP 2020](https://sites.google.com/view/wanlp-2020/home))
 
 ```
-@article{alkhamissi2020dd,
-      title={Deep Diacritization: Efficient Hierarchical Recurrence for Improved Arabic Diacritization}, 
-      author={Badr AlKhamissi and Muhammad N. ElNokrashy and Mohamed Gabr},
-      year={2020},
-      eprint={2011.00538},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
+@inproceedings{alkhamissi-etal-2020-dd,
+    title = "Deep Diacritization: Efficient Hierarchical Recurrence for Improved {A}rabic Diacritization",
+    author = "AlKhamissi, Badr  and
+              ElNokrashy, Muhammad  and
+              Gabr, Mohamed",
+    booktitle = "Proceedings of the Fifth Arabic Natural Language Processing Workshop",
+    month = dec,
+    year = "2020",
+    address = "Barcelona, Spain (Online)",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/2020.wanlp-1.4",
+    pages = "38--48",
+    abstract = "We propose a novel architecture for labelling character sequences that achieves state-of-the-art results on the Tashkeela Arabic diacritization benchmark. The core is a two-level recurrence hierarchy that operates on the word and character levels separately{---}enabling faster training and inference than comparable traditional models. A cross-level attention module further connects the two and opens the door for network interpretability. The task module is a softmax classifier that enumerates valid combinations of diacritics. This architecture can be extended with a recurrent decoder that optionally accepts priors from partially diacritized text, which improves results. We employ extra tricks such as sentence dropout and majority voting to further boost the final result. Our best model achieves a WER of 5.34{\%}, outperforming the previous state-of-the-art with a 30.56{\%} relative error reduction.",
 }
 ```
